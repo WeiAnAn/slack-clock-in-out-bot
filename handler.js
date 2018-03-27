@@ -1,31 +1,22 @@
 async function handler(context) {
-  if (getChannelName(context) === 'hit-card') {
-    console.log(context.event.text);
-    context.postMessage({
-      text: 'Hello!',
-      attachments: [
-        {
-          text: 'Choose a game to play',
-          fallback: 'You are unable to choose a game',
-          callback_id: 'wopr_game',
-          color: '#3AA3E3',
-          attachment_type: 'default',
-          actions: [
-            {
-              name: 'game',
-              text: 'Chess',
-              type: 'button',
-              value: 'chess'
-            }
-          ]
-        }
-      ]
-    });
+  if (getChannelName(context) === 'test') {
+    const text = getText(context);
+    const command = text.split(' ');
+    switch (command[0]) {
+      case 'in':
+        return await context.sendText('you are in');
+      case 'out':
+        return await context.sendText('you are out');
+    }
   }
 }
 
 function getChannelName(context) {
   return context.session.channel.name;
+}
+
+function getText(context) {
+  return context.event.text;
 }
 
 module.exports = handler;

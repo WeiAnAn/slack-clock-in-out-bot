@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { SlackBot } = require('bottender');
 const { createServer } = require('bottender/express');
 
@@ -6,7 +7,7 @@ const handler = require('./handler');
 
 const bot = new SlackBot({
   accessToken: config.accessToken,
-  verificationToken: config.verificationToken
+  verificationToken: config.verificationToken,
 });
 
 bot.onEvent(handler);
