@@ -8,20 +8,14 @@ function formatTime(time) {
   }
 
   const minutes = time % 60;
-  formatedStr = ` ${minutes}m`.concat(formatedStr);
+  formatedStr = `${minutes}m `.concat(formatedStr);
   if (!(time = Math.floor(time / 60))) {
     return formatedStr;
   }
 
   const hours = time % 24;
-  formatedStr = ` ${hours}h `.concat(formatedStr);
-  // if (!(time = Math.floor(time / 60))) {
+  formatedStr = `${hours}h `.concat(formatedStr);
   return formatedStr;
-  // }
-
-  // const days = Math.floor(time / 24);
-  // formatedStr = `${days}d `.concat(formatedStr);
-  // return formatedStr;
 }
 
 module.exports = formatTime;
