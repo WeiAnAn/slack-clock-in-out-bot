@@ -1,13 +1,14 @@
 require('dotenv').config();
-const { SlackBot } = require('bottender');
+const { SlackBot, MemorySessionStore } = require('bottender');
 const { createServer } = require('bottender/express');
 
 const config = require('./bottender.config.js').slack;
-const handler = require('./handler');
+const handler = require('./handlers');
 
 const bot = new SlackBot({
   accessToken: config.accessToken,
   verificationToken: config.verificationToken,
+  sessionStore: new MemorySessionStore(),
 });
 
 bot.onEvent(handler);
