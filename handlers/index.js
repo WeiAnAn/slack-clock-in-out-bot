@@ -1,5 +1,7 @@
 const ClockInHandler = require('./ClockInHandler');
 const ClockOutHandler = require('./ClockOutHandler');
+const ListRecordHandler = require('./ListRecordHandler');
+const EditRecordHandler = require('./EditRecordHandler');
 
 async function handler(context) {
   if (getChannelName(context) === 'test') {
@@ -10,6 +12,10 @@ async function handler(context) {
         return await ClockInHandler(context);
       case 'out':
         return await ClockOutHandler(context);
+      case 'list':
+        return await ListRecordHandler(context, command[1]);
+      case 'edit':
+        return await EditRecordHandler(context, command);
     }
   }
 }
