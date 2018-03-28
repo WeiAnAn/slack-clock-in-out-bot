@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bottender": "0.14.23",
+    "comma-separated-values": "^3.6.4",
     "dotenv": "^5.0.1",
     "knex": "^0.14.4",
     "moment": "^2.21.0",
