@@ -21,12 +21,12 @@ async function ClockOutHandler(ctx) {
     const durationTime = moment.duration(outTime.diff(inTime)).asSeconds();
 
     return ctx.sendText(
-      `out success
+      `<@${message.user}>out success
 record: \`${inTime.format(dateFormat)}\` ~ \`${outTime.format(dateFormat)}\`
 total time: \`${formatTime(durationTime)}\``
     );
   }
-  return ctx.sendText("you didn't in");
+  return ctx.sendText(`<@${message.user}>you didn't in`);
 }
 
 module.exports = ClockOutHandler;
