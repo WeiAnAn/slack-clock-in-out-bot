@@ -11,7 +11,8 @@
     "dotenv": "^5.0.1",
     "knex": "^0.14.4",
     "moment": "^2.21.0",
-    "mysql2": "^1.5.3"
+    "mysql2": "^1.5.3",
+    "validator": "^9.4.1"
   },
   "devDependencies": {
     "nodemon": "^1.17.1"
