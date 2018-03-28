@@ -11,7 +11,7 @@ async function ClockInHandler(ctx) {
     .whereNull('out');
 
   if (record.length) {
-    return ctx.sendText('you already in!');
+    return ctx.sendText(`<@${message.user}>you already in!`);
   }
 
   const result = await db('records').insert({
@@ -19,7 +19,7 @@ async function ClockInHandler(ctx) {
     in: new Date(),
   });
 
-  if (result[0]) return ctx.sendText('clock in successful');
+  if (result[0]) return ctx.sendText(`<@${message.user}>clock in successful`);
   return ctx.sendText('something went wrong');
 }
 
