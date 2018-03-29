@@ -22,7 +22,7 @@ async function handler(context) {
       case 'status':
         return await StatusHandler(context);
       case 'export':
-        return await ExportHandler(context);
+        return await ExportHandler(context, command);
       case 'help':
         return await HelpHandler(context);
       default:
