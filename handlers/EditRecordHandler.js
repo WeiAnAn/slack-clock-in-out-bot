@@ -8,18 +8,34 @@ async function EditRecordHandler(ctx, command) {
   const errorMsg = validateCommand(command);
   const revertType = type === 'in' ? 'out' : 'in';
   const compare = type === 'in' ? '>' : '<';
+  let result = null;
   if (errorMsg) return ctx.sendText(generateErrorMsg(message.user, errorMsg));
 
-  const result = await db('records')
-    .where({ user: message.user, id: id })
-    .where(revertType, compare, datetime)
-    .update(type, datetime);
+  if (id === 'today') {
+    if (type === 'out')
+      return ctx.sendText(
+        generateErrorMsg(message.user, "can't edit today out record!")
+      );
+    result = await db('records')
+      .where({ user: message.user })
+      .whereNull('out')
+      .update('in', datetime);
+  } else {
+    result = await db('records')
+      .where({ user: message.user, id: id })
+      .where(revertType, compare, datetime)
+      .update(type, datetime);
+  }
 
   if (!result)
     return ctx.sendText(
       generateErrorMsg(message.user, 'record not found or datetime error')
     );
-  return ctx.sendText(`<@${message.user}> update record ${id} success`);
+  return ctx.sendText(
+    `<@${
+      message.user
+    }> update record \`${id}\` \`${type}\` to \`${datetime}\` success`
+  );
 }
 
 function validateCommand(command) {
@@ -27,7 +43,8 @@ function validateCommand(command) {
 
   const [edit, id, type, date, time] = command;
   const datetime = date + ' ' + time;
-  if (!validator.isInt(id)) return 'id must be integer';
+  if (!validator.isInt(id) && id !== 'today')
+    return 'id must be integer or `today`';
   if (!validator.isIn(type, ['in', 'out'])) return 'type must be in or out';
   if (new Date(datetime).toString() === 'Invalid Date')
     return 'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`';
