@@ -6,7 +6,7 @@ const StatusHandler = require('./StatusHandler');
 const ExportHandler = require('./ExportHandler');
 
 async function handler(context) {
-  if (getChannelName(context) === 'test') {
+  if (getChannelName(context) === process.env.CHANNEL) {
     const text = getText(context);
     const command = text.split(' ');
     switch (command[0]) {
