@@ -4,6 +4,7 @@ const ListRecordHandler = require('./ListRecordHandler');
 const EditRecordHandler = require('./EditRecordHandler');
 const StatusHandler = require('./StatusHandler');
 const ExportHandler = require('./ExportHandler');
+const HelpHandler = require('./HelpHandler');
 
 async function handler(context) {
   if (getChannelName(context) === process.env.CHANNEL) {
@@ -22,6 +23,12 @@ async function handler(context) {
         return await StatusHandler(context);
       case 'export':
         return await ExportHandler(context);
+      case 'help':
+        return await HelpHandler(context);
+      default:
+        return context.sendText(
+          "i don't know what you talking about, try to use `help` command to get help"
+        );
     }
   }
 }
