@@ -69,7 +69,9 @@ async function ExportHandler(ctx, command) {
   records.push([], ['total time', [], formatTime(totalSec)]);
 
   const csv = new CSV(records, { header: ['in', 'out', 'time'] }).encode();
-  const fileName = `${message.user}-${moment().format('YYYYMMDDHHmmss')}.csv`;
+  const fileName = `${ctx.session.user.profile.display_name}-${moment().format(
+    'YYYYMMDDHHmmss'
+  )}.csv`;
 
   fs.writeFile(path.resolve('./public', fileName), csv, () => {
     return ctx.sendText(
