@@ -1,4 +1,5 @@
 const db = require('../db');
+const Record = require('../db/record');
 const CSV = require('comma-separated-values');
 const moment = require('moment');
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -20,33 +21,13 @@ async function ExportHandler(ctx, command) {
     const dateStr = year + '-' + convertToMonthStr(month);
     let startDate = moment(dateStr);
     let endDate = moment(dateStr).add(1, 'month');
-    records = await db('records')
-      .where('user', message.user)
-      .whereBetween('in', [
-        startDate.format(dateFormat),
-        endDate.format(dateFormat),
-      ])
-      .whereNotNull('out')
-      .select('in', 'out')
-      .orderBy('out', 'desc');
+    records = await Record.findByDateRange(user, startDate, endDate);
   } else if (type === 'between') {
     let startDate = moment(command[2]);
     let endDate = moment(command[3]).add(1, 'days');
-    records = await db('records')
-      .where('user', message.user)
-      .whereBetween('in', [
-        startDate.format(dateFormat),
-        endDate.format(dateFormat),
-      ])
-      .whereNotNull('out')
-      .select('in', 'out')
-      .orderBy('out', 'desc');
+    records = await Record.findByDateRange(user, startDate, endDate);
   } else {
-    records = await db('records')
-      .where('user', message.user)
-      .whereNotNull('out')
-      .select('in', 'out')
-      .orderBy('out', 'desc');
+    records = await Record.findAll(user);
   }
   let totalSec = 0;
 

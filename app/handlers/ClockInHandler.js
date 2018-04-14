@@ -1,25 +1,18 @@
-const db = require('../db');
+const Record = require('../db/record');
 
 async function ClockInHandler(ctx) {
   const message = ctx.event.message;
-  const userState = ctx.state[message.user];
+  const user = message.user;
 
-  const record = await db('records')
-    .where({
-      user: message.user,
-    })
-    .whereNull('out');
+  const status = await Record.getStatus(user);
 
   if (record.length) {
-    return ctx.sendText(`<@${message.user}>you already in!`);
+    return ctx.sendText(`<@${user}>you already in!`);
   }
 
-  const result = await db('records').insert({
-    user: message.user,
-    in: new Date(),
-  });
+  const id = await clockIn(user);
 
-  if (result[0]) return ctx.sendText(`<@${message.user}>clock in successful`);
+  if (id[0]) return ctx.sendText(`<@${user}>clock in successful`);
   return ctx.sendText('something went wrong');
 }
 

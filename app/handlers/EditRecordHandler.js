@@ -1,5 +1,6 @@
 const db = require('../db');
 const validator = require('validator');
+const Record = require('../db/record');
 
 async function EditRecordHandler(ctx, command) {
   const message = ctx.event.message;
@@ -16,15 +17,9 @@ async function EditRecordHandler(ctx, command) {
       return ctx.sendText(
         generateErrorMsg(message.user, "can't edit today out record!")
       );
-    result = await db('records')
-      .where({ user: message.user })
-      .whereNull('out')
-      .update('in', datetime);
+    result = await Record.updateToday(user, datetime);
   } else {
-    result = await db('records')
-      .where({ user: message.user, id: id })
-      .where(revertType, compare, datetime)
-      .update(type, datetime);
+    result = await Record.update(id, user, type, datetime);
   }
 
   if (!result)
