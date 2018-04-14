@@ -9,7 +9,7 @@ const HelpHandler = require('./HelpHandler');
 async function handler(context) {
   if (getChannelName(context) === process.env.CHANNEL) {
     const text = getText(context);
-    const command = text.split(' ');
+    const command = text.toLowerCase().split(' ');
     switch (command[0]) {
       case 'in':
         return await ClockInHandler(context);
