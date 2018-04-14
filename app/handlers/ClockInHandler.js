@@ -1,4 +1,5 @@
 const Record = require('../db/record');
+const formatMsg = require('../utils/formatMsg');
 
 async function ClockInHandler(ctx) {
   const message = ctx.event.message;
@@ -7,13 +8,13 @@ async function ClockInHandler(ctx) {
   const status = await Record.getStatus(user);
 
   if (status) {
-    return ctx.sendText(`<@${user}>you already in!`);
+    return ctx.sendText(formatMsg('you already in!', user));
   }
 
   const id = await Record.clockIn(user);
 
-  if (id[0]) return ctx.sendText(`<@${user}>clock in successful`);
-  return ctx.sendText('something went wrong');
+  if (id[0]) return ctx.sendText(formatMsg('clock in successful', user));
+  return ctx.sendText(formatMsg('something went wrong', user));
 }
 
 module.exports = ClockInHandler;

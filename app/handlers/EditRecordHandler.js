@@ -1,5 +1,6 @@
 const validator = require('validator');
 const Record = require('../db/record');
+const formatMsg = require('../utils/formatMsg');
 
 async function EditRecordHandler(ctx, command) {
   const message = ctx.event.message;
@@ -9,26 +10,30 @@ async function EditRecordHandler(ctx, command) {
   const errorMsg = validateCommand(command);
 
   let result = null;
-  if (errorMsg) return ctx.sendText(generateErrorMsg(message.user, errorMsg));
+  if (errorMsg) {
+    const msg = generateErrorMsg(errorMsg);
+    return ctx.sendText(formatMsg(user, msg));
+  }
 
   if (id === 'today') {
-    if (type === 'out')
-      return ctx.sendText(
-        generateErrorMsg(message.user, "can't edit today out record!")
-      );
+    if (type === 'out') {
+      const msg = generateErrorMsg("can't edit today out record!");
+      return ctx.sendText(formatMsg(msg, user));
+    }
     result = await Record.updateToday(user, datetime);
   } else {
     result = await Record.update(id, user, type, datetime);
   }
 
-  if (!result)
-    return ctx.sendText(
-      generateErrorMsg(message.user, 'record not found or datetime error')
-    );
+  if (!result) {
+    const msg = generateErrorMsg('record not found or datetime error');
+    return ctx.sendText(formatMsg(msg, user));
+  }
   return ctx.sendText(
-    `<@${
-      message.user
-    }> update record \`${id}\` \`${type}\` to \`${datetime}\` success`
+    formatMsg(
+      `update record \`${id}\` \`${type}\` to \`${datetime}\` success`,
+      user
+    )
   );
 }
 
@@ -44,8 +49,8 @@ function validateCommand(command) {
     return 'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`';
 }
 
-function generateErrorMsg(user, msg) {
-  return `<@${user}> ${msg} \n \`edit <record_id> <type(in|out)> <date(YYYY-MM-DD)> <time(HH:mm:SS)>\``;
+function generateErrorMsg(msg) {
+  return `${msg} \n \`edit <record_id|(today)> <type(in|out)> <date(YYYY-MM-DD)> <time(HH:mm:SS)>\``;
 }
 
 module.exports = EditRecordHandler;

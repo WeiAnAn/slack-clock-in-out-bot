@@ -5,13 +5,15 @@ const formatTime = require('../utils/formatTime');
 const fs = require('fs');
 const path = require('path');
 const { DATE_FORMAT } = require('../const');
+const formatMsg = require('../utils/formatMsg');
 
 async function ExportHandler(ctx, command) {
   const message = ctx.event.message;
   const user = message.user;
   const errMsg = validateCommand(command);
   if (errMsg) {
-    return ctx.sendText(generateErrorMsg(message.user, errMsg));
+    const msg = generateErrorMsg(errMsg);
+    return ctx.sendText(formatMsg(msg, user));
   }
   const type = command[1];
   let records = null;
@@ -44,7 +46,9 @@ async function ExportHandler(ctx, command) {
   });
 
   if (records.length === 0) {
-    return ctx.sendText("you didn't have record in this range");
+    return ctx.sendText(
+      formatMsg("you didn't have record in this range", user)
+    );
   }
 
   records.push([], ['total time', [], formatTime(totalSec)]);
@@ -56,9 +60,10 @@ async function ExportHandler(ctx, command) {
 
   fs.writeFile(path.resolve('./public', fileName), csv, () => {
     return ctx.sendText(
-      `<@${message.user}> here is your record\n${
-        process.env.HOST
-      }/public/${fileName}`
+      formatMsg(
+        `here is your record\n ${process.env.HOST}/public/${fileName}`,
+        user
+      )
     );
   });
 }
@@ -85,9 +90,9 @@ function validateCommand(command) {
   } else return 'command invalid';
 }
 
-function generateErrorMsg(user, msg) {
+function generateErrorMsg(msg) {
   return (
-    `<@${user}> ${msg} \n` +
+    `${msg} \n` +
     'export all: `export`' +
     'export month record: `export month <year> <month>`' +
     'export record in range: `export between <start date(YYYY-MM-DD)> <end date(YYYY-MM-DD)>`'
