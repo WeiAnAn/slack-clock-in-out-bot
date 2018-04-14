@@ -1,6 +1,6 @@
 const Record = require('../db/record');
 const moment = require('moment');
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const { DATE_FORMAT } = require('../const');
 
 async function StatusHandler(ctx) {
   const message = ctx.event.message;
@@ -9,7 +9,7 @@ async function StatusHandler(ctx) {
     return ctx.sendText(
       `<@${message.user}> your status is \`in\` when \`${moment(
         records[0].in
-      ).format(dateFormat)}\``
+      ).format(DATE_FORMAT)}\``
     );
   }
   return ctx.sendText(`<@${message.user}> your status is out`);

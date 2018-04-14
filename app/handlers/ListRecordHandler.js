@@ -1,7 +1,7 @@
 const Record = require('../db/record');
 const moment = require('moment');
 const validator = require('validator');
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+const { DATE_FORMAT } = require('../const');
 
 async function ListRecordHandler(ctx, page = '1') {
   const message = ctx.event.message;
@@ -15,8 +15,8 @@ async function ListRecordHandler(ctx, page = '1') {
     (prev, record) =>
       prev +
       `\`id: ${record.id}\t` +
-      `in:${moment(record.in).format(dateFormat)}\t` +
-      `out: ${moment(record.out).format(dateFormat)}\`\n`,
+      `in:${moment(record.in).format(DATE_FORMAT)}\t` +
+      `out: ${moment(record.out).format(DATE_FORMAT)}\`\n`,
     `<@${message.user}> your clock in history list page ${page}\n`
   );
 

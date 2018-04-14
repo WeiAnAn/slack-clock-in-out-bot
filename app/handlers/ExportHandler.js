@@ -1,10 +1,10 @@
 const Record = require('../db/record');
 const CSV = require('comma-separated-values');
 const moment = require('moment');
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 const formatTime = require('../utils/formatTime');
 const fs = require('fs');
 const path = require('path');
+const { DATE_FORMAT } = require('../const');
 
 async function ExportHandler(ctx, command) {
   const message = ctx.event.message;
@@ -37,8 +37,8 @@ async function ExportHandler(ctx, command) {
     const durationAsSec = moment.duration(outTime.diff(inTime)).asSeconds();
     totalSec += durationAsSec;
     return [
-      inTime.format(dateFormat),
-      outTime.format(dateFormat),
+      inTime.format(DATE_FORMAT),
+      outTime.format(DATE_FORMAT),
       formatTime(durationAsSec),
     ];
   });

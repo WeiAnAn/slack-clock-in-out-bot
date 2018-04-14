@@ -1,7 +1,7 @@
 const moment = require('moment');
 const formatTime = require('../utils/formatTime');
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 const Record = require('../db/record');
+const { DATE_FORMAT } = require('../const');
 
 async function ClockOutHandler(ctx) {
   const message = ctx.event.message;
@@ -17,7 +17,7 @@ async function ClockOutHandler(ctx) {
 
     return ctx.sendText(
       `<@${message.user}>out success
-record: \`${inTime.format(dateFormat)}\` ~ \`${outTime.format(dateFormat)}\`
+record: \`${inTime.format(DATE_FORMAT)}\` ~ \`${outTime.format(DATE_FORMAT)}\`
 total time: \`${formatTime(durationTime)}\``
     );
   }
