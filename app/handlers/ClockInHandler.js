@@ -6,11 +6,11 @@ async function ClockInHandler(ctx) {
 
   const status = await Record.getStatus(user);
 
-  if (record.length) {
+  if (status) {
     return ctx.sendText(`<@${user}>you already in!`);
   }
 
-  const id = await clockIn(user);
+  const id = await Record.clockIn(user);
 
   if (id[0]) return ctx.sendText(`<@${user}>clock in successful`);
   return ctx.sendText('something went wrong');

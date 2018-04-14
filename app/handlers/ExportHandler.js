@@ -1,4 +1,3 @@
-const db = require('../db');
 const Record = require('../db/record');
 const CSV = require('comma-separated-values');
 const moment = require('moment');
@@ -9,6 +8,7 @@ const path = require('path');
 
 async function ExportHandler(ctx, command) {
   const message = ctx.event.message;
+  const user = message.user;
   const errMsg = validateCommand(command);
   if (errMsg) {
     return ctx.sendText(generateErrorMsg(message.user, errMsg));

@@ -1,14 +1,13 @@
-const db = require('../db');
 const validator = require('validator');
 const Record = require('../db/record');
 
 async function EditRecordHandler(ctx, command) {
   const message = ctx.event.message;
-  const [edit, id, type, date, time] = command;
+  const user = message.user;
+  const [, id, type, date, time] = command;
   const datetime = date + ' ' + time;
   const errorMsg = validateCommand(command);
-  const revertType = type === 'in' ? 'out' : 'in';
-  const compare = type === 'in' ? '>' : '<';
+
   let result = null;
   if (errorMsg) return ctx.sendText(generateErrorMsg(message.user, errorMsg));
 
@@ -36,7 +35,7 @@ async function EditRecordHandler(ctx, command) {
 function validateCommand(command) {
   if (command.length !== 5) return 'command invalid';
 
-  const [edit, id, type, date, time] = command;
+  const [, id, type, date, time] = command;
   const datetime = date + ' ' + time;
   if (!validator.isInt(id) && id !== 'today')
     return 'id must be integer or `today`';

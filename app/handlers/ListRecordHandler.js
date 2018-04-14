@@ -5,6 +5,7 @@ const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 async function ListRecordHandler(ctx, page = '1') {
   const message = ctx.event.message;
+  const user = message.user;
   if (!validator.isInt(page))
     return ctx.sendText(`<@${message.user}> page error`);
 
