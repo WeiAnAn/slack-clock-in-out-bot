@@ -17,8 +17,9 @@ async function ClockOutHandler(ctx) {
     const durationTime = moment.duration(outTime.diff(inTime)).asSeconds();
     const msg =
       'out success\n' +
-      'record:' +
-      `\`${inTime.format(DATE_FORMAT)}\` ~ \`${outTime.format(DATE_FORMAT)}\`` +
+      'record: ' +
+      `\`${inTime.format(DATE_FORMAT)}\` ~ ` +
+      `\`${outTime.format(DATE_FORMAT)}\`\n` +
       `total time: \`${formatTime(durationTime)}\``;
     return ctx.sendText(formatMsg(msg, user));
   }
