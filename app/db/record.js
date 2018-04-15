@@ -34,21 +34,21 @@ async function update(id, user, type, datetime) {
   const compare = type === 'in' ? '>' : '<';
 
   return await db('records')
-    .where({ user: message.user, id: id })
+    .where({ user: user, id: id })
     .where(revertType, compare, datetime)
     .update(type, datetime);
 }
 
 async function updateToday(user, datetime) {
   return await db('records')
-    .where({ user: message.user })
+    .where({ user: user })
     .whereNull('out')
     .update('in', datetime);
 }
 
 async function findAll(user) {
   return await db('records')
-    .where('user', message.user)
+    .where('user', user)
     .whereNotNull('out')
     .select('in', 'out')
     .orderBy('out', 'desc');
@@ -72,3 +72,15 @@ async function getList(user, page) {
     .limit(10)
     .offset((page - 1) * 10);
 }
+
+module.exports = {
+  getStatus,
+  getList,
+  findByDateRange,
+  clockIn,
+  clockOut,
+  findAll,
+  updateToday,
+  update,
+  findLatest,
+};
