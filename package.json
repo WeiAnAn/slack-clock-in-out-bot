@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "migrate:dev": "knex migrate:latest",
+    "migrate:test": "cross-env NODE_ENV=test knex migrate:latest",
+    "migrate:prod": "cross-env NODE_ENV=production knex migrate:latest"
   },
   "dependencies": {
     "bottender": "0.14.23",
     "comma-separated-values": "^3.6.4",
+    "cross-env": "^5.1.4",
     "dotenv": "^5.0.1",
     "knex": "^0.14.4",
     "moment": "^2.21.0",
@@ -16,6 +20,7 @@
     "validator": "^9.4.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.1"
+    "nodemon": "^1.17.1",
+    "timemachine": "^0.3.0"
   }
 }
