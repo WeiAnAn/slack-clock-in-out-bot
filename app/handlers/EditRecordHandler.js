@@ -7,19 +7,16 @@ async function EditRecordHandler(ctx, command) {
   const user = message.user;
   const [, id, type, date, time] = command;
   const datetime = date + ' ' + time;
-  const errorMsg = validateCommand(command);
-
-  let result = null;
-  if (errorMsg) {
+  try {
+    validateCommand(command);
+  } catch (errorMsg) {
     const msg = generateErrorMsg(errorMsg);
     return ctx.sendText(formatMsg(user, msg));
   }
 
+  let result = null;
+
   if (id === 'today') {
-    if (type === 'out') {
-      const msg = generateErrorMsg("can't edit today out record!");
-      return ctx.sendText(formatMsg(msg, user));
-    }
     result = await Record.updateToday(user, datetime);
   } else {
     result = await Record.update(id, user, type, datetime);
@@ -38,15 +35,25 @@ async function EditRecordHandler(ctx, command) {
 }
 
 function validateCommand(command) {
-  if (command.length !== 5) return 'command invalid';
+  //command length should be 5
+  if (command.length !== 5) throw 'command invalid';
 
   const [, id, type, date, time] = command;
   const datetime = date + ' ' + time;
+
+  //validate id
   if (!validator.isInt(id) && id !== 'today')
-    return 'id must be integer or `today`';
-  if (!validator.isIn(type, ['in', 'out'])) return 'type must be in or out';
+    throw 'id must be integer or `today`';
+
+  //validate today type cannot be out
+  if (id === 'today' && type === 'out') throw "can't edit today out record!";
+
+  //validate type
+  if (!validator.isIn(type, ['in', 'out'])) throw 'type must be in or out';
+
+  //validate datetime
   if (new Date(datetime).toString() === 'Invalid Date')
-    return 'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`';
+    throw 'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`';
 }
 
 function generateErrorMsg(msg) {

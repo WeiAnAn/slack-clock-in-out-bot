@@ -10,13 +10,17 @@ const formatMsg = require('../utils/formatMsg');
 async function ExportHandler(ctx, command) {
   const message = ctx.event.message;
   const user = message.user;
-  const errMsg = validateCommand(command);
-  if (errMsg) {
+
+  try {
+    validateCommand(command);
+  } catch (errMsg) {
     const msg = generateErrorMsg(errMsg);
     return ctx.sendText(formatMsg(msg, user));
   }
+
   const type = command[1];
   let records = null;
+
   if (type === 'month') {
     const year = command[2];
     const month = command[3];
@@ -31,41 +35,29 @@ async function ExportHandler(ctx, command) {
   } else {
     records = await Record.findAll(user);
   }
-  let totalSec = 0;
 
-  records = records.map(record => {
-    const inTime = moment(record.in),
-      outTime = moment(record.out);
-    const durationAsSec = moment.duration(outTime.diff(inTime)).asSeconds();
-    totalSec += durationAsSec;
-    return [
-      inTime.format(DATE_FORMAT),
-      outTime.format(DATE_FORMAT),
-      formatTime(durationAsSec),
-    ];
-  });
-
-  if (records.length === 0) {
+  if (!records.length) {
     return ctx.sendText(
       formatMsg("you didn't have record in this range", user)
     );
   }
 
-  records.push([], ['total time', [], formatTime(totalSec)]);
+  const serializedRecords = serializeRecord(records);
+  const username = ctx.session.user.profile.display_name;
 
-  const csv = new CSV(records, { header: ['in', 'out', 'time'] }).encode();
-  const fileName = `${ctx.session.user.profile.display_name}-${moment().format(
-    'YYYYMMDDHHmmss'
-  )}.csv`;
-
-  fs.writeFile(path.resolve('./public', fileName), csv, () => {
-    return ctx.sendText(
-      formatMsg(
-        `here is your record\n ${process.env.HOST}/public/${fileName}`,
-        user
-      )
-    );
-  });
+  let fileName;
+  try {
+    fileName = await generateCSV(serializedRecords, username);
+  } catch (e) {
+    console.error(e);
+    return ctx.sendText(formatMsg('something wrong', username));
+  }
+  return ctx.sendText(
+    formatMsg(
+      `here is your record\n ${process.env.HOST}/public/${fileName}`,
+      user
+    )
+  );
 }
 
 function validateCommand(command) {
@@ -76,9 +68,9 @@ function validateCommand(command) {
     const year = command[2];
     const month = command[3];
     if (year.length !== 4) {
-      return 'year invalid';
+      throw 'year invalid';
     }
-    if (Number(month) < 1 || Number(month) > 12) return 'month invalid';
+    if (Number(month) < 1 || Number(month) > 12) throw 'month invalid';
   } else if (type === 'between') {
     const dateStart = command[2];
     const dateEnd = command[3];
@@ -86,8 +78,8 @@ function validateCommand(command) {
       new Date(dateStart).toString() === 'Invalid Date' ||
       new Date(dateEnd).toString() === 'Invalid Date'
     )
-      return 'date invalid';
-  } else return 'command invalid';
+      throw 'date invalid';
+  } else throw 'command invalid';
 }
 
 function generateErrorMsg(msg) {
@@ -102,6 +94,36 @@ function generateErrorMsg(msg) {
 function convertToMonthStr(month) {
   if (month.length === 2) return month;
   return '0' + month;
+}
+
+async function generateCSV(records, username) {
+  const csv = new CSV(records, { header: ['in', 'out', 'time'] }).encode();
+  const fileName = `${username}-${moment().format('YYYYMMDDHHmmss')}.csv`;
+  const filePath = path.resolve('./public', fileName);
+  const filePromise = new Promise((resolve, reject) => {
+    fs.writeFile(filePath, csv, err => {
+      if (err) reject(err);
+      resolve(fileName);
+    });
+  });
+  return filePromise;
+}
+
+function serializeRecord(records) {
+  let totalSec = 0;
+  let serializedRecords = records.map(record => {
+    const inTime = moment(record.in);
+    const outTime = moment(record.out);
+    const durationAsSec = moment.duration(outTime.diff(inTime)).asSeconds();
+    totalSec += durationAsSec;
+    return [
+      inTime.format(DATE_FORMAT),
+      outTime.format(DATE_FORMAT),
+      formatTime(durationAsSec),
+    ];
+  });
+  serializedRecords.push([], ['total time', [], formatTime(totalSec)]);
+  return serializedRecords;
 }
 
 module.exports = ExportHandler;
