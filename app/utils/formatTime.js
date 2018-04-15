@@ -1,6 +1,6 @@
 function formatTime(time) {
   let formatedStr = '';
-
+  time = Math.floor(time);
   const seconds = time % 60;
   formatedStr = `${seconds}s`.concat(formatedStr);
   if (!(time = Math.floor(time / 60))) {
@@ -13,8 +13,7 @@ function formatTime(time) {
     return formatedStr;
   }
 
-  const hours = time % 24;
-  formatedStr = `${hours}h `.concat(formatedStr);
+  formatedStr = `${time}h `.concat(formatedStr);
   return formatedStr;
 }
 
