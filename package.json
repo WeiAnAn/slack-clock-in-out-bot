@@ -7,7 +7,8 @@
     "start": "node index.js",
     "migrate:dev": "knex migrate:latest",
     "migrate:test": "cross-env NODE_ENV=test knex migrate:latest",
-    "migrate:prod": "cross-env NODE_ENV=production knex migrate:latest"
+    "migrate:prod": "cross-env NODE_ENV=production knex migrate:latest",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "dependencies": {
     "bottender": "0.14.23",
@@ -22,5 +23,8 @@
   "devDependencies": {
     "nodemon": "^1.17.1",
     "timemachine": "^0.3.0"
+  },
+  "jest": {
+    "testRegex": "(\\.|/)(test|spec)\\.jsx?$"
   }
 }
