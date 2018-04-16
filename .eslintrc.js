@@ -9,6 +9,7 @@ module.exports = {
     indent: ['error', 2, { SwitchCase: 1 }],
     quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always'],
+    'no-console': [0],
   },
   parserOptions: {
     ecmaVersion: 2017,
