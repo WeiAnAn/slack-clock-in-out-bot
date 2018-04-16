@@ -1,4 +1,4 @@
-const formatMsg = require('../../app/utils/formatMsg');
+const formatMsg = require('../formatMsg');
 
 describe('test formatMsg util', () => {
   test('should return correct message', () => {

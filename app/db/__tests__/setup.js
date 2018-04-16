@@ -1,4 +1,4 @@
-const db = require('../../app/db/index');
+const db = require('../');
 
 async function setup() {
   await db.migrate.rollback();

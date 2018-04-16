@@ -1,4 +1,4 @@
-const formatTime = require('../../app/utils/formatTime');
+const formatTime = require('../formatTime');
 
 describe('test formatTime util', () => {
   test('should return correct message', () => {

@@ -1,6 +1,6 @@
-const Record = require('../../app/db/record');
+const Record = require('../record');
 const setup = require('./setup');
-const db = require('../../app/db');
+const db = require('../');
 const timeMachine = require('timemachine');
 
 //mock date
