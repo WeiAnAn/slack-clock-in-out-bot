@@ -21,19 +21,24 @@ async function ExportHandler(ctx, command) {
   const type = command[1];
   let records = null;
 
-  if (type === 'month') {
-    const year = command[2];
-    const month = command[3];
-    const dateStr = year + '-' + convertToMonthStr(month);
-    let startDate = moment(dateStr);
-    let endDate = moment(dateStr).add(1, 'month');
-    records = await Record.findByDateRange(user, startDate, endDate);
-  } else if (type === 'between') {
-    let startDate = moment(command[2]);
-    let endDate = moment(command[3]).add(1, 'days');
-    records = await Record.findByDateRange(user, startDate, endDate);
-  } else {
-    records = await Record.findAll(user);
+  try {
+    if (type === 'month') {
+      const year = command[2];
+      const month = command[3];
+      const dateStr = year + '-' + convertToMonthStr(month);
+      let startDate = moment(dateStr);
+      let endDate = moment(dateStr).add(1, 'month');
+      records = await Record.findByDateRange(user, startDate, endDate);
+    } else if (type === 'between') {
+      let startDate = moment(command[2]);
+      let endDate = moment(command[3]).add(1, 'days');
+      records = await Record.findByDateRange(user, startDate, endDate);
+    } else {
+      records = await Record.findAll(user);
+    }
+  } catch (e) {
+    console.error(e);
+    return ctx.sendText(formatMsg('something wrong', username));
   }
 
   if (!records.length) {
@@ -52,6 +57,7 @@ async function ExportHandler(ctx, command) {
     console.error(e);
     return ctx.sendText(formatMsg('something wrong', username));
   }
+
   return ctx.sendText(
     formatMsg(
       `here is your record\n ${process.env.HOST}/public/${fileName}`,
@@ -84,7 +90,7 @@ function validateCommand(command) {
 
 function generateErrorMsg(msg) {
   return (
-    `${msg} \n` +
+    `${msg}\n` +
     'export all: `export`' +
     'export month record: `export month <year> <month>`' +
     'export record in range: `export between <start date(YYYY-MM-DD)> <end date(YYYY-MM-DD)>`'

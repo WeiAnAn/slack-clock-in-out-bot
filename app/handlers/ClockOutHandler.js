@@ -7,9 +7,10 @@ const formatMsg = require('../utils/formatMsg');
 async function ClockOutHandler(ctx) {
   const message = ctx.event.message;
   const user = message.user;
-  const result = await Record.clockOut(user);
+  try {
+    const result = await Record.clockOut(user);
+    if (!result) return ctx.sendText(formatMsg("you didn't in", user));
 
-  if (result) {
     const record = await Record.findLatest(user);
 
     const inTime = moment(record.in);
@@ -21,9 +22,12 @@ async function ClockOutHandler(ctx) {
       `\`${inTime.format(DATE_FORMAT)}\` ~ ` +
       `\`${outTime.format(DATE_FORMAT)}\`\n` +
       `total time: \`${formatTime(durationTime)}\``;
+
     return ctx.sendText(formatMsg(msg, user));
+  } catch (e) {
+    console.error(e);
   }
-  return ctx.sendText(formatMsg("you didn't in", user));
+  return ctx.sendText(formatMsg('something went wrong', user));
 }
 
 module.exports = ClockOutHandler;

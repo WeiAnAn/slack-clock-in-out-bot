@@ -11,27 +11,33 @@ async function EditRecordHandler(ctx, command) {
     validateCommand(command);
   } catch (errorMsg) {
     const msg = generateErrorMsg(errorMsg);
-    return ctx.sendText(formatMsg(user, msg));
-  }
-
-  let result = null;
-
-  if (id === 'today') {
-    result = await Record.updateToday(user, datetime);
-  } else {
-    result = await Record.update(id, user, type, datetime);
-  }
-
-  if (!result) {
-    const msg = generateErrorMsg('record not found or datetime error');
     return ctx.sendText(formatMsg(msg, user));
   }
-  return ctx.sendText(
-    formatMsg(
-      `update record \`${id}\` \`${type}\` to \`${datetime}\` success`,
-      user
-    )
-  );
+
+  try {
+    let result = null;
+
+    if (id === 'today') {
+      result = await Record.updateToday(user, datetime);
+    } else {
+      result = await Record.update(id, user, type, datetime);
+    }
+
+    if (!result) {
+      const msg = generateErrorMsg('record not found or datetime error');
+      return ctx.sendText(formatMsg(msg, user));
+    }
+
+    return ctx.sendText(
+      formatMsg(
+        `update record \`${id}\` \`${type}\` to \`${datetime}\` success`,
+        user
+      )
+    );
+  } catch (e) {
+    console.error(e);
+  }
+  return ctx.sendText(formatMsg('something went wrong', user));
 }
 
 function validateCommand(command) {
@@ -57,7 +63,7 @@ function validateCommand(command) {
 }
 
 function generateErrorMsg(msg) {
-  return `${msg} \n \`edit <record_id|(today)> <type(in|out)> <date(YYYY-MM-DD)> <time(HH:mm:SS)>\``;
+  return `${msg}\n\`edit <record_id|(today)> <type(in|out)> <date(YYYY-MM-DD)> <time(HH:mm:SS)>\``;
 }
 
 module.exports = EditRecordHandler;
