@@ -38,7 +38,7 @@ async function ExportHandler(ctx, command) {
     }
   } catch (e) {
     console.error(e);
-    return ctx.sendText(formatMsg('something wrong', username));
+    return ctx.sendText(formatMsg('something went wrong', user));
   }
 
   if (!records.length) {
@@ -60,7 +60,7 @@ async function ExportHandler(ctx, command) {
 
   return ctx.sendText(
     formatMsg(
-      `here is your record\n ${process.env.HOST}/public/${fileName}`,
+      `here is your record\n${process.env.HOST}/public/${fileName}`,
       user
     )
   );

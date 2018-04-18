@@ -2,6 +2,13 @@ jest.mock('../../db/record');
 jest.mock('../../utils/formatMsg');
 const ExportHandler = require('../ExportHandler.js');
 const { ContextSimulator } = require('bottender/test-utils');
+const timeMachine = require('timemachine');
+process.env.HOST = 'http://localhost';
+
+//mock date
+timeMachine.config({
+  dateString: 'April 21, 2018 08:00:00',
+});
 
 const simulator = new ContextSimulator({
   platform: 'slack',
@@ -53,5 +60,49 @@ describe('test ExportHandler', () => {
     const expectStr = 'command invalid\n' + commandHelp;
     await ExportHandler(ctx, command.split(' '));
     expect(ctx.sendText).toBeCalledWith(expectStr);
+  });
+
+  test('export between should return here is your record', async () => {
+    const command = 'export between 2018-04-10 2018-04-20';
+    const ctx = simulator.createTextContext(command);
+    await ExportHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith(
+      'here is your record\n' +
+        'http://localhost/public/spengler-20180421080000.csv'
+    );
+  });
+
+  test('export month should return here is your record', async () => {
+    const command = 'export month 2018 04';
+    const ctx = simulator.createTextContext(command);
+    await ExportHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith(
+      'here is your record\n' +
+        'http://localhost/public/spengler-20180421080000.csv'
+    );
+  });
+
+  test('export should return here is your record', async () => {
+    const command = 'export';
+    const ctx = simulator.createTextContext(command);
+    await ExportHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith(
+      'here is your record\n' +
+        'http://localhost/public/spengler-20180421080000.csv'
+    );
+  });
+
+  test('should return record', async () => {
+    const command = 'export';
+    const ctx = simulator.createTextContext(command);
+    await ExportHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith("you didn't have record in this range");
+  });
+
+  test('should return something went wrong', async () => {
+    const command = 'export';
+    const ctx = simulator.createTextContext(command);
+    await ExportHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith('something went wrong');
   });
 });
