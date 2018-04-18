@@ -83,4 +83,24 @@ describe('test db record table', () => {
     record = await Record.getStatus('user');
     expect(record).toEqual({ in: new Date('2018-04-21T00:00:00.000Z') });
   });
+
+  test('update should return 1', async () => {
+    let result = await Record.update(20, 'test', 'in', '2018-04-20 08:30:00');
+    expect(result).toBe(1);
+    result = await Record.update(20, 'test', 'out', '2018-04-20 18:30:00');
+    expect(result).toBe(1);
+  });
+
+  test('update failed should return 0', async () => {
+    let result = await Record.update(20, 'test', 'in', '2018-04-21 08:30:00');
+    expect(result).toBe(0);
+    result = await Record.update(20, 'test', 'out', '2018-04-19 18:30:00');
+    expect(result).toBe(0);
+  });
+
+  test('update today should return 1', async () => {
+    await Record.clockIn('test');
+    let result = await Record.updateToday('test', '2018-04-21 07:00:00');
+    expect(result).toBe(1);
+  });
 });
