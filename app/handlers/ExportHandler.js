@@ -26,12 +26,16 @@ async function ExportHandler(ctx, command) {
       const year = command[2];
       const month = command[3];
       const dateStr = year + '-' + convertToMonthStr(month);
-      let startDate = moment(dateStr);
-      let endDate = moment(dateStr).add(1, 'month');
+      let startDate = moment(dateStr).format(DATE_FORMAT);
+      let endDate = moment(dateStr)
+        .add(1, 'month')
+        .format(DATE_FORMAT);
       records = await Record.findByDateRange(user, startDate, endDate);
     } else if (type === 'between') {
-      let startDate = moment(command[2]);
-      let endDate = moment(command[3]).add(1, 'days');
+      let startDate = moment(command[2]).format(DATE_FORMAT);
+      let endDate = moment(command[3])
+        .add(1, 'days')
+        .format(DATE_FORMAT);
       records = await Record.findByDateRange(user, startDate, endDate);
     } else {
       records = await Record.findAll(user);
