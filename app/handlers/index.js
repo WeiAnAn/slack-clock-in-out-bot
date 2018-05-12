@@ -15,6 +15,7 @@ async function handler(context) {
         return await ClockInHandler(context);
       case 'out':
         return await ClockOutHandler(context);
+      case 'ls':
       case 'list':
         return await ListRecordHandler(context, command[1]);
       case 'edit':
