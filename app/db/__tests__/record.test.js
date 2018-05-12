@@ -103,4 +103,34 @@ describe('test db record table', () => {
     let result = await Record.updateToday('test', '2018-04-21 07:00:00');
     expect(result).toBe(1);
   });
+
+  test('update latest in should return 1', async () => {
+    await Record.clockIn('test');
+    let result = await Record.updateLatestIn('test', '2018-04-21 07:00:00');
+    let latest = await db('records')
+      .orderBy('id', 'desc')
+      .limit(1);
+    expect(result).toBe(1);
+    expect(latest[0]).toEqual({
+      id: 21,
+      in: new Date('2018-04-21 07:00'),
+      out: null,
+      user: 'test',
+    });
+  });
+
+  test('update latest in should return 1', async () => {
+    let result = await Record.updateLatestOut('test', '2018-04-21 07:00:00');
+    let latest = await db('records')
+      .whereNotNull('out')
+      .orderBy('id', 'desc')
+      .limit(1);
+    expect(result).toBe(1);
+    expect(latest[0]).toEqual({
+      id: 20,
+      in: new Date('2018-04-20 08:00'),
+      out: new Date('2018-04-21 07:00'),
+      user: 'test',
+    });
+  });
 });

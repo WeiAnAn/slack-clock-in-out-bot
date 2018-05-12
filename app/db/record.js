@@ -46,6 +46,23 @@ async function updateToday(user, datetime) {
     .update('in', datetime);
 }
 
+async function updateLatestIn(user, datetime) {
+  return await db('records')
+    .update('in', datetime)
+    .where({ user: user })
+    .orderBy('id', 'desc')
+    .limit(1);
+}
+
+async function updateLatestOut(user, datetime) {
+  return await db('records')
+    .update('out', datetime)
+    .where({ user: user })
+    .whereNotNull('out')
+    .orderBy('id', 'desc')
+    .limit(1);
+}
+
 async function findAll(user) {
   return await db('records')
     .where('user', user)
@@ -81,6 +98,8 @@ module.exports = {
   clockOut,
   findAll,
   updateToday,
+  updateLatestIn,
+  updateLatestOut,
   update,
   findLatest,
 };

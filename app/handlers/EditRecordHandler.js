@@ -17,8 +17,9 @@ async function EditRecordHandler(ctx, command) {
   try {
     let result = null;
 
-    if (id === 'today') {
-      result = await Record.updateToday(user, datetime);
+    if (id === 'latest') {
+      if (type === 'in') result = await Record.updateLatestIn(user, datetime);
+      else result = await Record.updateLatestOut(user, datetime);
     } else {
       result = await Record.update(id, user, type, datetime);
     }
@@ -48,11 +49,11 @@ function validateCommand(command) {
   const datetime = date + ' ' + time;
 
   //validate id
-  if (!validator.isInt(id) && id !== 'today')
-    throw 'id must be integer or `today`';
+  if (!validator.isInt(id) && id !== 'latest')
+    throw 'id must be integer or `latest`';
 
   //validate today type cannot be out
-  if (id === 'today' && type === 'out') throw "can't edit today out record!";
+  // if (id === 'today' && type === 'out') throw "can't edit today out record!";
 
   //validate type
   if (!validator.isIn(type, ['in', 'out'])) throw 'type must be in or out';

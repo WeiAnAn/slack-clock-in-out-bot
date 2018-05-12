@@ -78,6 +78,14 @@ const getList = jest
     throw new Error('error');
   });
 
+async function updateLatestIn(user, datetime) {
+  return 1;
+}
+
+async function updateLatestOut(user, datetime) {
+  return 1;
+}
+
 module.exports = {
   getStatus,
   getList,
@@ -86,6 +94,8 @@ module.exports = {
   clockOut,
   findAll,
   updateToday,
+  updateLatestIn,
+  updateLatestOut,
   update,
   findLatest,
 };

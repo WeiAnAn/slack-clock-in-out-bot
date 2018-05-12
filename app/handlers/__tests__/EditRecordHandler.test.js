@@ -21,24 +21,16 @@ describe('test EditRecordHandler', async () => {
     expect(ctx.sendText).toBeCalledWith(expectStr);
   });
 
-  test('should send id must be integer or `today`', async () => {
+  test('should send id must be integer or `latest`', async () => {
     const command = 'edit a in 2018-04-20 08:00:00';
     const ctx = simulator.createTextContext(command);
-    const expectStr = 'id must be integer or `today`\n' + commandHelp;
-    await EditRecordHandler(ctx, command.split(' '));
-    expect(ctx.sendText).toBeCalledWith(expectStr);
-  });
-
-  test("should send can't edit today out record!", async () => {
-    const command = 'edit today out 2018-04-20 08:00:00';
-    const ctx = simulator.createTextContext(command);
-    const expectStr = "can't edit today out record!\n" + commandHelp;
+    const expectStr = 'id must be integer or `latest`\n' + commandHelp;
     await EditRecordHandler(ctx, command.split(' '));
     expect(ctx.sendText).toBeCalledWith(expectStr);
   });
 
   test('should send type must be in or out', async () => {
-    const command = 'edit today test 2018-04-20 08:00:00';
+    const command = 'edit latest test 2018-04-20 08:00:00';
     const ctx = simulator.createTextContext(command);
     const expectStr = 'type must be in or out\n' + commandHelp;
     await EditRecordHandler(ctx, command.split(' '));
@@ -46,7 +38,7 @@ describe('test EditRecordHandler', async () => {
   });
 
   test('should send date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`', async () => {
-    const command = 'edit today in 2018-04-35 08:00:00';
+    const command = 'edit latest in 2018-04-35 08:00:00';
     const ctx = simulator.createTextContext(command);
     const expectStr =
       'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`\n' +
@@ -55,12 +47,21 @@ describe('test EditRecordHandler', async () => {
     expect(ctx.sendText).toBeCalledWith(expectStr);
   });
 
-  test('should send update record today', async () => {
-    const command = 'edit today in 2018-04-20 08:00:00';
+  test('should send update record latest in', async () => {
+    const command = 'edit latest in 2018-04-20 08:00:00';
     const ctx = simulator.createTextContext(command);
     await EditRecordHandler(ctx, command.split(' '));
     expect(ctx.sendText).toBeCalledWith(
-      'update record `today` `in` to `2018-04-20 08:00:00` success'
+      'update record `latest` `in` to `2018-04-20 08:00:00` success'
+    );
+  });
+
+  test('should send update record latest out', async () => {
+    const command = 'edit latest out 2018-04-20 08:00:00';
+    const ctx = simulator.createTextContext(command);
+    await EditRecordHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith(
+      'update record `latest` `out` to `2018-04-20 08:00:00` success'
     );
   });
 
