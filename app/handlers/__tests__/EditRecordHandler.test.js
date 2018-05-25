@@ -1,6 +1,7 @@
 jest.mock('../../db/record');
 jest.mock('../../utils/formatMsg');
 const EditRecordHandler = require('../EditRecordHandler.js');
+const transformDatetime = require('../../utils/transformDatetime');
 const { ContextSimulator } = require('bottender/test-utils');
 
 const simulator = new ContextSimulator({
@@ -37,22 +38,32 @@ describe('test EditRecordHandler', async () => {
     expect(ctx.sendText).toBeCalledWith(expectStr);
   });
 
-  test('should send date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`', async () => {
+  test('should send date error\ninvalid date format, must be `<YYYY-MM-DD>`', async () => {
     const command = 'edit latest in 2018-04-35 08:00:00';
     const ctx = simulator.createTextContext(command);
     const expectStr =
-      'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`\n' +
+      'invalid date format, must be `<YYYY-MM-DD>`\n' +
       commandHelp;
     await EditRecordHandler(ctx, command.split(' '));
     expect(ctx.sendText).toBeCalledWith(expectStr);
   });
 
-  test('should send update record latest in', async () => {
-    const command = 'edit latest in 2018-04-20 08:00:00';
+  test('should send time error\ninvalid time format, must `<hh:mm:ss>`', async () => {
+    const command = 'edit latest in 2018-04-30 25:00:00';
+    const ctx = simulator.createTextContext(command);
+    const expectStr =
+      'invalid time format, must be `<hh:mm:ss>`\n' +
+      commandHelp;
+    await EditRecordHandler(ctx, command.split(' '));
+    expect(ctx.sendText).toBeCalledWith(expectStr);
+  });
+
+  test('should send update record today in', async () => {
+    const command = 'edit latest in today 08:00:00';
     const ctx = simulator.createTextContext(command);
     await EditRecordHandler(ctx, command.split(' '));
     expect(ctx.sendText).toBeCalledWith(
-      'update record `latest` `in` to `2018-04-20 08:00:00` success'
+      'update record `latest` `in` to `'+ transformDatetime('today', '08:00:00') +'` success'
     );
   });
 
