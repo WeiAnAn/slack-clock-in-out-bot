@@ -1,31 +1,36 @@
-const validator = require('validator');
-const Record = require('../db/record');
-const formatMsg = require('../utils/formatMsg');
+const validator = require("validator");
+const moment = require("moment");
+const Record = require("../db/record");
+const formatMsg = require("../utils/formatMsg");
+const validateCommand = require("../utils/commandValidator");
+const transformDatetime = require('../utils/transformDatetime');
 
 async function EditRecordHandler(ctx, command) {
   const message = ctx.event.message;
   const user = message.user;
   const [, id, type, date, time] = command;
-  const datetime = date + ' ' + time;
   try {
-    validateCommand(command);
+    validateCommand({ id, type, date, time });
   } catch (errorMsg) {
     const msg = generateErrorMsg(errorMsg);
     return ctx.sendText(formatMsg(msg, user));
   }
 
   try {
+    const datetime = transformDatetime(date, time);
     let result = null;
 
-    if (id === 'latest') {
-      if (type === 'in') result = await Record.updateLatestIn(user, datetime);
-      else result = await Record.updateLatestOut(user, datetime);
+    if (id === "latest") {
+      result =
+        type === "in"
+          ? (result = await Record.updateLatestIn(user, datetime))
+          : (result = await Record.updateLatestOut(user, datetime));
     } else {
       result = await Record.update(id, user, type, datetime);
     }
 
     if (!result) {
-      const msg = generateErrorMsg('record not found or datetime error');
+      const msg = generateErrorMsg("record not found or datetime error");
       return ctx.sendText(formatMsg(msg, user));
     }
 
@@ -38,29 +43,7 @@ async function EditRecordHandler(ctx, command) {
   } catch (e) {
     console.error(e);
   }
-  return ctx.sendText(formatMsg('something went wrong', user));
-}
-
-function validateCommand(command) {
-  //command length should be 5
-  if (command.length !== 5) throw 'command invalid';
-
-  const [, id, type, date, time] = command;
-  const datetime = date + ' ' + time;
-
-  //validate id
-  if (!validator.isInt(id) && id !== 'latest')
-    throw 'id must be integer or `latest`';
-
-  //validate today type cannot be out
-  // if (id === 'today' && type === 'out') throw "can't edit today out record!";
-
-  //validate type
-  if (!validator.isIn(type, ['in', 'out'])) throw 'type must be in or out';
-
-  //validate datetime
-  if (new Date(datetime).toString() === 'Invalid Date')
-    throw 'date or time format error\ndate format:`<YYYY-MM-DD>`\ntime format: `<HH:mm:SS>`';
+  return ctx.sendText(formatMsg("something went wrong", user));
 }
 
 function generateErrorMsg(msg) {
